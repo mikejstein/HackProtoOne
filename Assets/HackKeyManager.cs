@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class HackKeyManager : MonoBehaviour {
+
+    public bool jiggle = true;
 
     public float litLength = 1.0f;
 
@@ -33,6 +36,7 @@ public class HackKeyManager : MonoBehaviour {
     }
 	// Use this for initialization
 	void Start () {
+        DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
         //Get a list of all hackEys
         GameObject[] gos = GameObject.FindGameObjectsWithTag("HackKey");
         foreach (GameObject go in  gos)
@@ -47,7 +51,6 @@ public class HackKeyManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
 	}
 
     private void updateText()

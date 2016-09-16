@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
 public enum ColorStatus { lit, unlit, error, success};
 public class HackKey : MonoBehaviour
@@ -12,9 +13,6 @@ public class HackKey : MonoBehaviour
     private ColorStatus colorStatus = ColorStatus.unlit;
     private Renderer myRenderer;
     private Rigidbody rb;
-
-   
-
     private Vector3 initialPosition;
 
 
@@ -31,7 +29,10 @@ public class HackKey : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (HackKeyManager.instance.jiggle)
+        {
+            Jiggle();
+        }
     }
 
     public void setStatus(ColorStatus status)
@@ -66,7 +67,8 @@ public class HackKey : MonoBehaviour
 	#if UNITY_EDITOR
     void OnMouseUp()
     {
-        clickUp();
+        //clickUp();
+        Jiggle();
     }
 	#endif
     
@@ -112,6 +114,35 @@ public class HackKey : MonoBehaviour
         }
     }
 
+    /*
+     * How does jiggle work?
+     * If Jiggle is true, a key is moving to a point from initial point, and back
+     */
+    private void Jiggle()
+    {
+        if (DOTween.IsTweening(rb))
+        {
+            Debug.Log("IS TWEENING");
+        } else {
+            Debug.Log("STARTING");
+            rb.DOMove(RandomPoint(), Random.Range(0.5f, 0.8f)).SetRelative().SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear);
+        }
+    }
 
+
+
+    private Vector3 RandomPoint()
+    {
+        //Get a random direction in radians
+        float angle = Random.Range(0.0f, Mathf.PI * 2);
+
+        //Create a vector with length 1
+        Vector3 V = new Vector3(Mathf.Sin(angle), Mathf.Cos(angle), 0);
+
+        //Scaled to desired length. Maybe 3?
+
+        V *= 1.5f;
+        return V;
+    }
 
 }
