@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{CA8E4A04-97B4-C169-2745-C11BD5532D53}") = "HackProtoOne", "Assembly-CSharp.csproj", "{8EF7F68D-E798-1FE3-B34E-BA9914A0AE10}"
+EndProject
+Project("{CA8E4A04-97B4-C169-2745-C11BD5532D53}") = "HackProtoOne", "Assembly-CSharp-Editor.csproj", "{7A8EA2CA-DB14-1BC8-D833-219B205DF94F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EF7F68D-E798-1FE3-B34E-BA9914A0AE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF7F68D-E798-1FE3-B34E-BA9914A0AE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF7F68D-E798-1FE3-B34E-BA9914A0AE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF7F68D-E798-1FE3-B34E-BA9914A0AE10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A8EA2CA-DB14-1BC8-D833-219B205DF94F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A8EA2CA-DB14-1BC8-D833-219B205DF94F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A8EA2CA-DB14-1BC8-D833-219B205DF94F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A8EA2CA-DB14-1BC8-D833-219B205DF94F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
