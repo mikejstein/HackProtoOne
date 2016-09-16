@@ -57,14 +57,19 @@ public class HackKey : MonoBehaviour
         myRenderer.material.color = newColor;
     }
 
+
+	public void TouchUp() {
+		clickUp();
+	}
+
+
+	#if UNITY_EDITOR
     void OnMouseUp()
     {
         clickUp();
     }
-
-    public void TouchUp() {
-        clickUp();
-    }
+	#endif
+    
 
     private void clickUp()
     {
