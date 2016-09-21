@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using UnityEngine.UI;
 using DG.Tweening;
 
@@ -20,6 +21,8 @@ public class HackKeyManager : MonoBehaviour {
     public Text sequenceTotalUI;
 
     public static HackKeyManager instance = null;
+    public Text hackerType;
+    public TextAsset hackerText;
     private Coroutine lighter = null;
 
 
@@ -45,6 +48,9 @@ public class HackKeyManager : MonoBehaviour {
             hackKeys.Add(temp);
         }
         updateText();
+
+        //Set the hacker text
+        hackerType.text = hackerText.text;
         StartCoroutine(StartGame());
         
 	}

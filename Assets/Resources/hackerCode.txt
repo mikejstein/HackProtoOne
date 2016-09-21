@@ -1,0 +1,103 @@
+'use strict';
+var processAccounts = require('./processAccounts');
+var processReviews = require('./processReviews');
+var processVouches = require('./processVouches');
+var _  = require('underscore');
+var levers = require('./modifiers.json');
+require('colors');
+
+function _postProcessScores(results) {
+    var buckets = results.buckets;
+    var totalScore = 0;
+    for (var key in buckets) {
+        if (buckets.hasOwnProperty(key)) {
+            totalScore += buckets[key].score;
+
+        }
+    }
+    //We've now calculated the total score from the sum of all buckets
+    //Now we see what percentage of the total score a bucket is
+    for (var keyAgain in buckets) {
+        if (buckets.hasOwnProperty(keyAgain)) {
+            buckets[keyAgain].ratio = buckets[keyAgain].score / totalScore;
+        }
+    }
+
+}
+
+
+
+// internal helper to finalize score after three buckets are calculated
+function _finalizeScore(results, done) {
+
+    _postProcessScores(results);
+
+    // @TEMP
+    var score = results.buckets.reviews.score + results.buckets.accounts.score + results.buckets.vouches.score;
+    var level = 0;
+
+    //Score is my total points.
+    //
+
+    while (levers.scoreRanking[level] < score) {
+        level++;
+    }
+
+    //score is currenlty my total points.
+    //Get the points for the NEXT level
+    var percentageToNextLevel = score / levers.scoreRanking[level+1];
+/*
+    console.log('Reviews: '+results.buckets.reviews.score);
+    console.log('Vouches: '+results.buckets.vouches.score);
+    console.log('Accounts: '+results.buckets.accounts.score);
+    console.log('TOTAL POINTS: '+score);
+    console.log('Your Karma Level: '+level);
+    */
+
+
+    var pointsBreakdown = {};
+    _.extend(pointsBreakdown, results.buckets.reviews.points);
+    _.extend(pointsBreakdown, results.buckets.vouches.points);
+    _.extend(pointsBreakdown, results.buckets.accounts.points);
+    for (var source in pointsBreakdown) {
+        pointsBreakdown[source] = pointsBreakdown[source] / score;
+    }
+    score = level;
+
+    var retResults = {
+        results: results,
+        statistics: {
+            pointsBreakdown: pointsBreakdown,
+            percentageToNextLevel: percentageToNextLevel,
+            reviewChart: results.buckets.reviews.reviewsChart
+        }
+    };
+    done(null, score, retResults);
+}
+
+/////////////////////////////////////////////////
+///////////Main Karma Algorithm Entry////////////
+/////////////////////////////////////////////////
+module.exports = function(data, done) {
+    // results of all the async calculations
+    var results = {};
+    // where we store the buckets
+    results.buckets = {};
+    // balancing variables
+
+    // total items for later calculations
+
+    // // console.log(JSON.stringify(results));
+
+    // after all 3 bucks finish, we'll finize the data
+    var cb = _.after(3, function(){
+        _finalizeScore(results, done);
+    });
+
+
+    // run the buckets.
+    processReviews(data, results, cb);
+    processAccounts(data, results, cb);
+    processVouches(data, results, cb);
+
+};
