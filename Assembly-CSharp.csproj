@@ -50,6 +50,7 @@
      <Compile Include="Assets\Resources\Scripts\CameraRaycast.cs" />
      <Compile Include="Assets\Resources\Scripts\HackKey.cs" />
      <Compile Include="Assets\Resources\Scripts\HackKeyManager.cs" />
+     <Compile Include="Assets\Resources\Scripts\TextScroller.cs" />
      <None Include="Assets\Demigiant\DOTween\readme.txt" />
      <None Include="Assets\Demigiant\DOTween\DOTween50.xml" />
      <None Include="Assets\Demigiant\DOTween\DOTween46.xml" />

@@ -5,10 +5,11 @@ using System;
 using System.IO;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Text.RegularExpressions;
 
 public class HackKeyManager : MonoBehaviour {
 
-    public bool jiggle = true;
+    private bool jiggle = false;
 
     public float litLength = 1.0f;
 
@@ -21,8 +22,10 @@ public class HackKeyManager : MonoBehaviour {
     public Text sequenceTotalUI;
 
     public static HackKeyManager instance = null;
-    public Text hackerType;
-    public TextAsset hackerText;
+    
+    private TextScroller scroller; 
+
+
     private Coroutine lighter = null;
 
 
@@ -49,8 +52,11 @@ public class HackKeyManager : MonoBehaviour {
         }
         updateText();
 
-        //Set the hacker text
-        hackerType.text = hackerText.text;
+        //Get the hacker text
+        scroller = GetComponentInChildren<TextScroller>();
+
+
+        //Star the game.
         StartCoroutine(StartGame());
         
 	}
@@ -59,10 +65,16 @@ public class HackKeyManager : MonoBehaviour {
 	void Update () {
 	}
 
+
     private void updateText()
     {
         correctTotalUI.text = correctTotal.ToString();
         sequenceTotalUI.text = correctSequence.ToString();
+    }
+
+    private void AddHackerText()
+    {
+        scroller.AddLine();
     }
 
     public void KeyClicked(HackKey key)
@@ -76,6 +88,7 @@ public class HackKeyManager : MonoBehaviour {
             correctSequence++;
             correctTotal++;
             StartCoroutine(hackKeys[indexOfKey].successFlash());
+            AddHackerText();
         } else
         {
             correctSequence = 0;
@@ -149,5 +162,11 @@ public class HackKeyManager : MonoBehaviour {
         correctTotal = 0;
         updateText();
         StartCoroutine(StartGame());
+    }
+
+
+    public bool getJiggle()
+    {
+        return jiggle;
     }
 }

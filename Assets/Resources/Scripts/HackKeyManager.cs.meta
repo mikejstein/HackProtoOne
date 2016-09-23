@@ -1,10 +1,14 @@
 fileFormatVersion: 2
 guid: a524b1bc19a29a14b89dfe4a480433e7
-timeCreated: 1473888895
+timeCreated: 1474657383
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - correctTotalUI: {instanceID: 0}
+  - sequenceTotalUI: {instanceID: 0}
+  - hackerType: {instanceID: 0}
+  - hackerTextAsset: {fileID: 4900000, guid: e8a9dbdf45dd53c41a29ffcbc32cb8e6, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -5,7 +5,7 @@ using DG.Tweening;
 public enum ColorStatus { lit, unlit, error, success};
 public class HackKey : MonoBehaviour
 {
-   
+
     private Color defaultColor;
     private Color successColor = new Color(0.0f, 1.0f, 0.0f);
     private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
@@ -14,6 +14,9 @@ public class HackKey : MonoBehaviour
     private Renderer myRenderer;
     private Rigidbody rb;
     private Vector3 initialPosition;
+
+    private bool isScaling = false;
+    private bool isMoving = false;
 
 
     // Use this for initialization
@@ -29,7 +32,7 @@ public class HackKey : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (HackKeyManager.instance.jiggle)
+        if (HackKeyManager.instance.getJiggle())
         {
             Jiggle();
         }
@@ -59,19 +62,18 @@ public class HackKey : MonoBehaviour
     }
 
 
-	public void TouchUp() {
-		clickUp();
-	}
+    public void TouchUp() {
+        clickUp();
+    }
 
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
     void OnMouseUp()
     {
-        //clickUp();
-        Jiggle();
+        clickUp();
     }
-	#endif
-    
+#endif
+
 
     private void clickUp()
     {
@@ -83,7 +85,7 @@ public class HackKey : MonoBehaviour
         return defaultColor;
     }
 
-   public IEnumerator errorFlash()
+    public IEnumerator errorFlash()
     {
         if (colorStatus == ColorStatus.error)
         {
@@ -122,14 +124,23 @@ public class HackKey : MonoBehaviour
     {
         if (DOTween.IsTweening(rb))
         {
-            Debug.Log("IS TWEENING");
         } else {
-            Debug.Log("STARTING");
             rb.DOMove(RandomPoint(), Random.Range(0.5f, 0.8f)).SetRelative().SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear);
         }
     }
 
+    private void Scale(bool on)
+    {
+        if (on)
+        {
+            rb.transform.DOScale(0.75f, 0.5f);
+        } else if (!on)
+        {
+            rb.transform.DOScale(1.0f, 0.5f);
+        }
+    }
 
+    private void 
 
     private Vector3 RandomPoint()
     {
