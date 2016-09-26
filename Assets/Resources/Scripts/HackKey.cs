@@ -3,6 +3,14 @@ using System.Collections;
 using DG.Tweening;
 
 public enum ColorStatus { lit, unlit, error, success};
+
+public enum EffectStatus
+{
+    None = 0,
+    Jiggle = 1,
+    ScaleDown = 2,
+    ScaleUp = 4
+}
 public class HackKey : MonoBehaviour
 {
 
@@ -11,12 +19,19 @@ public class HackKey : MonoBehaviour
     private Color selectedColor = new Color(0.0f, 0.0f, 1.0f);
     private Color errorColor = new Color(1.0f, 0.0f, 0.0f);
     private ColorStatus colorStatus = ColorStatus.unlit;
+
+
     private Renderer myRenderer;
     private Rigidbody rb;
     private Vector3 initialPosition;
 
     private bool isScaling = false;
     private bool isMoving = false;
+
+    private EffectStatus effectStatus = EffectStatus.None;
+    private Tweener jiggleTweener;
+
+    private int a = 0;
 
 
     // Use this for initialization
@@ -27,14 +42,43 @@ public class HackKey : MonoBehaviour
         defaultColor = myRenderer.material.color;
         initialPosition = rb.transform.position;
         colorStatus = ColorStatus.unlit;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (HackKeyManager.instance.getJiggle())
+        RunEffects(effectStatus);
+    }
+
+    private bool HasFlag(EffectStatus e, EffectStatus f)
+    {
+        return ((e & f) == f);
+    }
+
+    private void RunEffects(EffectStatus effects) {
+        if (!(HasFlag(effects, EffectStatus.None))) {
+            if (HasFlag(effects, EffectStatus.Jiggle)) {
+                Debug.Log("JIGGLE");
+            }
+            if (HasFlag(effects, EffectStatus.ScaleUp)) {
+
+            }
+            if (HasFlag(effects, EffectStatus.ScaleDown)) {
+
+            }
+        }
+    }
+
+    public void SetEffect(EffectStatus whichEffect, bool effectOn)
+    {
+        if (effectOn)
         {
-            Jiggle();
+            effectStatus = effectStatus | whichEffect; //bitwise OR to combine effects
+        }
+        if (!(effectOn))
+        {
+            effectStatus = effectStatus & (~whichEffect); //bitwise AND on the invereted effect to emove
         }
     }
 
@@ -122,10 +166,18 @@ public class HackKey : MonoBehaviour
      */
     private void Jiggle()
     {
-        if (DOTween.IsTweening(rb))
+        if (jiggleTweener == null)
         {
-        } else {
-            rb.DOMove(RandomPoint(), Random.Range(0.5f, 0.8f)).SetRelative().SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear);
+            jiggleTweener = rb.DOMove(RandomPoint(), Random.Range(0.5f, 0.8f)).SetRelative().SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear).SetAutoKill(false);
+        }
+        if (!(jiggleTweener.IsPlaying()))
+        {
+            Debug.Log("IS NOT PLAYING");
+            a++;
+            if (a < 2)
+            {
+                jiggleTweener.Restart(false);
+            }
         }
     }
 
@@ -134,13 +186,10 @@ public class HackKey : MonoBehaviour
         if (on)
         {
             rb.transform.DOScale(0.75f, 0.5f);
-        } else if (!on)
-        {
+        } else if (!(on)) {
             rb.transform.DOScale(1.0f, 0.5f);
         }
     }
-
-    private void 
 
     private Vector3 RandomPoint()
     {

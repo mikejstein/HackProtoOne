@@ -1,0 +1,1 @@
+D:\Dev\HackProtoOne\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache

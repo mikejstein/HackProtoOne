@@ -7,9 +7,18 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Text.RegularExpressions;
 
+public enum NodeAbilities
+{
+    None = 0,
+    Jiggle = 1,
+    ScaleUp = 2
+}
+
+
+
 public class HackKeyManager : MonoBehaviour {
 
-    private bool jiggle = false;
+    private bool jiggle = true;
 
     public float litLength = 1.0f;
 
@@ -23,7 +32,13 @@ public class HackKeyManager : MonoBehaviour {
 
     public static HackKeyManager instance = null;
     
-    private TextScroller scroller; 
+    private TextScroller scroller;
+    
+    private NodeAbilities nodeAbilities = NodeAbilities.Jiggle;
+    private NodeAbilities activeAbilities = NodeAbilities.None;
+    private Dictionary<NodeAbilities, float> timeSinceAbility = new Dictionary<NodeAbilities, float>();
+    private float timeBreak = 10.0f;
+    private int timeMod = 0;
 
 
     private Coroutine lighter = null;
@@ -63,8 +78,62 @@ public class HackKeyManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        effectImplementer();
 	}
 
+    //A hackeymanager is a node.
+    //A node knows what it's capable of.
+    //Every frame, it needs to see what is currenly running, and do a check to see if it's time to run.
+
+    private bool HasFlag(NodeAbilities e, NodeAbilities f)
+    {
+        return ((e & f) == f);
+    }
+
+    private bool effectRoll(int mod)
+    {
+        int doGo = UnityEngine.Random.Range(0, 100) + mod;
+        if (doGo > 75)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    private void effectImplementer()
+    {
+        foreach(NodeAbilities na in Enum.GetValues(typeof(NodeAbilities))) {
+            Debug.Log('Checking ' + na);
+            // Am I currently running?
+            bool isRunning = HasFlag(activeAbilities, na);
+            
+            if (isRunning)
+            {
+                //how long have I been running for?
+                float runTime = timeSinceAbility[na];
+                if (runTime >= timeBreak)
+                {
+                    bool cont = effectRoll(5);
+                    if (!(cont))
+                    {
+                        //if I don't continue, kill it
+                        timeSinceAbility[na] = Time.time;
+
+                    }
+                }
+
+            } else {
+                //how long have I been not running?
+                float waitTime = timeSinceAbility[na];
+
+            }
+
+            
+
+        }
+    }
 
     private void updateText()
     {
