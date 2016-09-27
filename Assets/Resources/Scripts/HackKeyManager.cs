@@ -11,12 +11,22 @@ public enum NodeAbilities
 {
     None = 0,
     Jiggle = 1,
-    ScaleUp = 2
+    ScaleUp = 2,
+	FakeLight = 4
 }
 
 
+/*
+ * Here's how we do : 
+ * Right now, assume a node can do all the abilites.
+ * We're going to read the ability list (all), parse it, and have a dictionary of
+ * "abilities I have" and "Time since last ability".
+ * The enum is basically keeping track of all currently active abilitys, 
+ */
 
 public class HackKeyManager : MonoBehaviour {
+
+
 
     private bool jiggle = true;
 
@@ -32,11 +42,10 @@ public class HackKeyManager : MonoBehaviour {
 
     public static HackKeyManager instance = null;
     
-    private TextScroller scroller;
-    
-    private NodeAbilities nodeAbilities = NodeAbilities.Jiggle;
+    private TextScroller scroller;    
     private NodeAbilities activeAbilities = NodeAbilities.None;
-    private Dictionary<NodeAbilities, float> timeSinceAbility = new Dictionary<NodeAbilities, float>();
+    private Dictionary<NodeAbilities, float> timeTracker = new Dictionary<NodeAbilities, float>();
+
     private float timeBreak = 10.0f;
     private int timeMod = 0;
 
@@ -67,6 +76,8 @@ public class HackKeyManager : MonoBehaviour {
         }
         updateText();
 
+		timeTracker.Add(NodeAbilities.Jiggle, Time.time); //add my abilities to the time tracker. Currently only one built is jiggle, so I DOn
+
         //Get the hacker text
         scroller = GetComponentInChildren<TextScroller>();
 
@@ -78,18 +89,34 @@ public class HackKeyManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        effectImplementer();
+        effectChecker();
 	}
 
-    //A hackeymanager is a node.
-    //A node knows what it's capable of.
-    //Every frame, it needs to see what is currenly running, and do a check to see if it's time to run.
+	private void RunEffect() {
+
+	}
+
+	private void CancelEffect() {
+	}
+
+	public void SetFlag(NodeAbilities addAbility, bool effectOn)
+	{
+		if (effectOn)
+		{
+			activeAbilities = activeAbilities | addAbility;
+		}
+		if (!(effectOn))
+		{
+			activeAbilities = activeAbilities & (~addAbility); //bitwise AND on the invereted effect to emove
+		}
+
+	}
 
     private bool HasFlag(NodeAbilities e, NodeAbilities f)
     {
         return ((e & f) == f);
     }
-
+		
     private bool effectRoll(int mod)
     {
         int doGo = UnityEngine.Random.Range(0, 100) + mod;
@@ -102,37 +129,41 @@ public class HackKeyManager : MonoBehaviour {
         }
     }
 
-    private void effectImplementer()
+    private void effectChecker()
     {
-        foreach(NodeAbilities na in Enum.GetValues(typeof(NodeAbilities))) {
-            Debug.Log('Checking ' + na);
-            // Am I currently running?
-            bool isRunning = HasFlag(activeAbilities, na);
-            
-            if (isRunning)
-            {
-                //how long have I been running for?
-                float runTime = timeSinceAbility[na];
-                if (runTime >= timeBreak)
-                {
-                    bool cont = effectRoll(5);
-                    if (!(cont))
-                    {
-                        //if I don't continue, kill it
-                        timeSinceAbility[na] = Time.time;
-
-                    }
-                }
-
-            } else {
-                //how long have I been not running?
-                float waitTime = timeSinceAbility[na];
-
-            }
-
-            
-
-        }
+		foreach(KeyValuePair<NodeAbilities, float> entry in timeTracker) {
+			bool isRunning = HasFlag(activeAbilities, entry.Key);
+			if (isRunning) {
+				//How long have i been running?
+				float runTime = entry.Value;
+				if (Time.time - runTime >= timeBreak) {
+					timeMod = 0;
+					bool cont = effectRoll(timeMod);
+					if (cont) {
+						Debug.Log("KILL "+entry.Key);
+						timeTracker[entry.Key] = Time.time;
+ 						SetFlag(entry.Key, false);
+						//kill the effect
+					}
+				} else {
+					timeMod++;
+				}
+			} else {
+				float waitTime = entry.Value;
+				if (Time.time - waitTime >= timeBreak) {
+					timeMod = 0;
+					bool cont = effectRoll(timeMod);
+					if (cont) {
+						Debug.Log("RUN "+entry.Key);
+						timeTracker[entry.Key] = Time.time;
+						SetFlag(entry.Key, true);
+						//star the effect
+					}
+				} else {
+					timeMod++;
+				}
+			}
+		}
     }
 
     private void updateText()
