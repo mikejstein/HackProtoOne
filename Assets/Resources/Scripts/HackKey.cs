@@ -4,13 +4,7 @@ using DG.Tweening;
 
 public enum ColorStatus { lit, unlit, error, success};
 
-public enum EffectStatus
-{
-    None = 0,
-    Jiggle = 1,
-    ScaleDown = 2,
-    ScaleUp = 4
-}
+
 public class HackKey : MonoBehaviour
 {
 
@@ -25,13 +19,9 @@ public class HackKey : MonoBehaviour
     private Rigidbody rb;
     private Vector3 initialPosition;
 
-    private bool isScaling = false;
-    private bool isMoving = false;
-
-    private EffectStatus effectStatus = EffectStatus.None;
     private Tweener jiggleTweener;
+    private bool runJiggle = false;
 
-    private int a = 0;
 
 
     // Use this for initialization
@@ -48,37 +38,39 @@ public class HackKey : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RunEffects(effectStatus);
-    }
-
-    private bool HasFlag(EffectStatus e, EffectStatus f)
-    {
-        return ((e & f) == f);
-    }
-
-    private void RunEffects(EffectStatus effects) {
-        if (!(HasFlag(effects, EffectStatus.None))) {
-            if (HasFlag(effects, EffectStatus.Jiggle)) {
-                Debug.Log("JIGGLE");
-            }
-            if (HasFlag(effects, EffectStatus.ScaleUp)) {
-
-            }
-            if (HasFlag(effects, EffectStatus.ScaleDown)) {
-
-            }
+        if (runJiggle)
+        {
+            Jiggle();
         }
     }
 
-    public void SetEffect(EffectStatus whichEffect, bool effectOn)
+
+
+    public void SetEffect(NodeAbilities effect, bool effectOn)
     {
-        if (effectOn)
+        Debug.Log("Setting " + effect + " to " + effectOn);
+
+        switch (effect)
         {
-            effectStatus = effectStatus | whichEffect; //bitwise OR to combine effects
-        }
-        if (!(effectOn))
-        {
-            effectStatus = effectStatus & (~whichEffect); //bitwise AND on the invereted effect to emove
+            case NodeAbilities.Jiggle:
+                if (effectOn)
+                {
+                    runJiggle = true;
+                } else
+                {
+                    runJiggle = false;
+                }
+                break;
+            case NodeAbilities.ScaleDown:
+                if (effectOn)
+                {
+                    Scale(true);
+                } else
+                {
+                    Scale(false);
+                }
+                break;
+                           
         }
     }
 
@@ -172,9 +164,6 @@ public class HackKey : MonoBehaviour
         }
         if (!(jiggleTweener.IsPlaying()))
         {
-            Debug.Log("IS NOT PLAYING");
-            a++;
-            if (a < 2)
             {
                 jiggleTweener.Restart(false);
             }

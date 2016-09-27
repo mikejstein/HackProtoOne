@@ -12,7 +12,8 @@ public enum NodeAbilities
     None = 0,
     Jiggle = 1,
     ScaleUp = 2,
-	FakeLight = 4
+	FakeLight = 4,
+    ScaleDown = 8
 }
 
 
@@ -64,6 +65,7 @@ public class HackKeyManager : MonoBehaviour {
         }
         DontDestroyOnLoad(gameObject);
     }
+
 	// Use this for initialization
 	void Start () {
         DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
@@ -77,6 +79,7 @@ public class HackKeyManager : MonoBehaviour {
         updateText();
 
 		timeTracker.Add(NodeAbilities.Jiggle, Time.time); //add my abilities to the time tracker. Currently only one built is jiggle, so I DOn
+        //timeTracker.Add(NodeAbilities.ScaleDown, Time.time);
 
         //Get the hacker text
         scroller = GetComponentInChildren<TextScroller>();
@@ -92,11 +95,27 @@ public class HackKeyManager : MonoBehaviour {
         effectChecker();
 	}
 
-	private void RunEffect() {
+	private void SetEffect(NodeAbilities runAbility, bool setOn) {
 
-	}
+        /*
+         * So, what do we do? We set a key to turn on jiggle, i guess.
+         */
+        switch(runAbility)
+        {
+            case NodeAbilities.Jiggle:
+                foreach (HackKey key in hackKeys)
+                {
+                    key.SetEffect(runAbility, setOn);
+                }
+                break;
+            case NodeAbilities.ScaleDown:
+                foreach (HackKey key in hackKeys)
+                {
+                    key.SetEffect(runAbility, setOn);
+                }
+                break;
 
-	private void CancelEffect() {
+        }
 	}
 
 	public void SetFlag(NodeAbilities addAbility, bool effectOn)
@@ -109,6 +128,7 @@ public class HackKeyManager : MonoBehaviour {
 		{
 			activeAbilities = activeAbilities & (~addAbility); //bitwise AND on the invereted effect to emove
 		}
+        SetEffect(addAbility, effectOn);
 
 	}
 
@@ -136,14 +156,14 @@ public class HackKeyManager : MonoBehaviour {
 			if (isRunning) {
 				//How long have i been running?
 				float runTime = entry.Value;
+                float remTime = Time.time - runTime;
 				if (Time.time - runTime >= timeBreak) {
 					timeMod = 0;
 					bool cont = effectRoll(timeMod);
 					if (cont) {
-						Debug.Log("KILL "+entry.Key);
+
 						timeTracker[entry.Key] = Time.time;
  						SetFlag(entry.Key, false);
-						//kill the effect
 					}
 				} else {
 					timeMod++;
@@ -157,7 +177,6 @@ public class HackKeyManager : MonoBehaviour {
 						Debug.Log("RUN "+entry.Key);
 						timeTracker[entry.Key] = Time.time;
 						SetFlag(entry.Key, true);
-						//star the effect
 					}
 				} else {
 					timeMod++;
@@ -222,7 +241,7 @@ public class HackKeyManager : MonoBehaviour {
     {
         Func<int> litNumber = () => { return UnityEngine.Random.Range(0, hackKeys.Count); };
         
-        int newLit = 0;
+        int newLit = litNumber();
         while (invalidKeys.Contains(newLit))
         {
            newLit = litNumber();
